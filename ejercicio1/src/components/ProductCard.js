@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import styles from './ProductCard.module.css'
 
 export function ProductCard({ product, background="slategray", onPurchase }){
+  const [stock,setStockCount] = useState(product.stock)
+  const [showMore, setShowMore] = useState()
+  
+  function handleClick(){
+    setStockCount(stock - 1);
+    onPurchase(product)
+  }
+
   return (
-    
       <article className={styles.Container} style={{background}}>
         <h2>{product.title}</h2>
         <img
@@ -12,13 +20,15 @@ export function ProductCard({ product, background="slategray", onPurchase }){
         height={128}
         />
         <p>Specification</p>
+        <button onClick={() => setShowMore(!showMore)}>{showMore? 'Hide' : 'Show more'}</button>
+        {showMore &&
         <ul className={styles.Spec}>
           {product.specification.map((spec, index) => (
             <li key={index}>{spec}</li>
           ))}
-        </ul>
-        <Status stock={product.stock}/>
-        {product.stock > 0 && (<button onClick={() => (onPurchase(product))}>Buy (From ${product.price})</button>)}
+        </ul>}
+        <Status stock={stock}/>
+        {stock > 0 && (<button onClick={handleClick}>Buy (From ${product.price})</button>)}
       </article>
     
   );
