@@ -9,6 +9,10 @@ export function ProductCard({ product, background="slategray", onPurchase }){
     setStockCount(stock - 1);
     onPurchase(product)
   }
+  function handleTwoClicks(){
+    setStockCount((prevState) => prevState - 1);
+    setStockCount((prevState) => prevState - 1);
+  }
 
   return (
       <article className={styles.Container} style={{background}}>
@@ -28,7 +32,16 @@ export function ProductCard({ product, background="slategray", onPurchase }){
           ))}
         </ul>}
         <Status stock={stock}/>
-        {stock > 0 && (<button onClick={handleClick}>Buy (From ${product.price})</button>)}
+        
+        {stock > 0 && (
+          <>
+            <p>Price: ${product.price}</p>
+            <button onClick={handleClick}>Buy</button>
+          </>
+        )}
+        {stock >= 2 && ( 
+          <button onClick={handleTwoClicks}>Buy two</button>
+        )}
       </article>
     
   );

@@ -2,7 +2,8 @@ import { Fragment } from "react/jsx-runtime";
 import { ProductCard } from "./components/ProductCard";
 import { ProductList } from "./components/ProductList";
 import styles from "./App.module.css";
-
+import { ProductFilter } from "./components/ProductFilter";
+import { useState } from "react";
 
 const products = [
   {
@@ -35,17 +36,29 @@ const products = [
       "Always-On Retina display",
       "Up to 18 hours normal use",
     ],
-    stock: 3,
+    stock: 6,
     price: 400,
   }
 
 ];
-
-function handlePurchase(product){
+function App() {
+  const [filters, setFilters] = useState({
+    price: {
+      min: 0,
+      max: 999,
+    },
+    other: "other value",
+  });
+  function handlePurchase(product){
     return (window.alert(`You bought an ${product.title} with price $${product.price}`));
   }
+  function handleFilter(key, value){
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      price:{...prevFilters.price,[key]:value}
 
-function App() {
+    }));
+  }
   return (
     
     <div className={styles.App}>
@@ -58,10 +71,10 @@ function App() {
         ))}
       </ProductList>
 
-      <h2>Products which cost up to $500</h2>
-
+      <h2>Products filtered by price</h2>
+      <ProductFilter filters={filters} onFilter={handleFilter}/>
       
-        {products.filter(({price}) => price < 500).map(({title, price}) => (
+        {products.filter(({price}) => price <= filters.price.max && price >= filters.price.min).map(({title, price}) => (
           <Fragment key={title}>
             <p key={title} className={styles.ListTitle}>
               {title} cost ${price}
