@@ -4,44 +4,11 @@ import { ProductList } from "./components/ProductList";
 import styles from "./App.module.css";
 import { ProductFilter } from "./components/ProductFilter";
 import { useState } from "react";
+import { products as productsData } from "./data/products";
 
-const products = [
-  {
-    imageSrc: "images/iphone.png",
-    title: "iPhone 15 Pro",
-    specification: [
-      "A17 Pro chip with 6-core GPU",
-      "3x or 5x Telephoto camera",
-      "Up to 29 hours video playback"
-    ],
-    stock: 10,
-    price: 999,
-  },
-  {
-    imageSrc: "images/airpods.png",
-    title: "AirPods Pro 2",
-    specification: [
-      "Noise Cancellation",
-      "Dust, sweat, and water resistant",
-      "Up to 6 hours of listening",
-    ],
-    stock: 0,
-    price: 200,
-  },
-  {
-    imageSrc: "images/apple-watch.png",
-    title: "Apple Watch 9",
-    specification: [
-      "45mm or 41mm case size",
-      "Always-On Retina display",
-      "Up to 18 hours normal use",
-    ],
-    stock: 6,
-    price: 400,
-  }
 
-];
 function App() {
+  const [products, setProducts] = useState(productsData);
   const [filters, setFilters] = useState({
     price: {
       min: 0,
@@ -49,16 +16,29 @@ function App() {
     },
     other: "other value",
   });
-  function handlePurchase(product){
-    return (window.alert(`You bought an ${product.title} with price $${product.price}`));
+
+  const [favorites, setFavorites] = useState([]);
+
+  function handlePurchase(productId, stockCount){
+      setProducts(prevProducts=>prevProducts.map((product)=>product.id === productId ? {...product, stockCount} : product))
   }
+
   function handleFilter(key, value){
     setFilters((prevFilters) => ({
       ...prevFilters,
       price:{...prevFilters.price,[key]:value}
-
     }));
   }
+
+  function handleFavorite(productId){
+    if(favorites.includes(productId) ){
+      setFavorites(favorites.filter(item => item !== productId));
+    }
+    else{
+      setFavorites((prevFav) => [...prevFav, productId]);
+    }
+  }
+
   return (
     
     <div className={styles.App}>
@@ -67,7 +47,7 @@ function App() {
       
       <ProductList>
         {products.map((product) => (
-            <ProductCard key={product.title} width="96px" height="96px" onPurchase={handlePurchase} product={product} />
+            <ProductCard key={product.title} width="96px" height="96px" onPurchase={handlePurchase} product={product}  onFavorite={handleFavorite} isFavorite={favorites.includes(product.id)} />
         ))}
       </ProductList>
 

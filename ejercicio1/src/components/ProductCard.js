@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import styles from './ProductCard.module.css'
 
-export function ProductCard({ product, background="slategray", onPurchase }){
-  const [stock,setStockCount] = useState(product.stock)
+export function ProductCard({ product, background="slategray", onPurchase, onFavorite, isFavorite }){
+  
   const [showMore, setShowMore] = useState()
   
   function handleClick(){
-    setStockCount(stock - 1);
-    onPurchase(product)
+    onPurchase(product.id, product.stockCount - 1)
   }
   function handleTwoClicks(){
-    setStockCount((prevState) => prevState - 1);
-    setStockCount((prevState) => prevState - 1);
+    onPurchase(product.id, product.stockCount - 2)
   }
+  
 
   return (
       <article className={styles.Container} style={{background}}>
+        <button className={styles.Favorite} onClick={() => onFavorite(product.id)}>{isFavorite ? "❤️" : "🤍" }</button>
         <h2>{product.title}</h2>
         <img
         src={product.imageSrc}
@@ -24,22 +24,22 @@ export function ProductCard({ product, background="slategray", onPurchase }){
         height={128}
         />
         <p>Specification</p>
-        <button onClick={() => setShowMore(!showMore)}>{showMore? 'Hide' : 'Show more'}</button>
+        <button onClick={() => setShowMore(!showMore)}>{showMore? 'Hide' : 'Show'}</button>
         {showMore &&
         <ul className={styles.Spec}>
           {product.specification.map((spec, index) => (
             <li key={index}>{spec}</li>
           ))}
         </ul>}
-        <Status stock={stock}/>
+        <Status stockCount={product.stockCount}/>
         
-        {stock > 0 && (
+        {product.stockCount > 0 && (
           <>
             <p>Price: ${product.price}</p>
             <button onClick={handleClick}>Buy</button>
           </>
         )}
-        {stock >= 2 && ( 
+        {product.stockCount >= 2 && ( 
           <button onClick={handleTwoClicks}>Buy two</button>
         )}
       </article>
@@ -47,9 +47,9 @@ export function ProductCard({ product, background="slategray", onPurchase }){
   );
 } 
 
-export function Status({stock}){
+export function Status({stockCount}){
   const statusNoAvailable = <p className={styles.StatusNotAvailable}>No items available</p>;
-  const statusAvailable = <p className={styles.StatusAvailable}>Items available: {stock}</p>;
+  const statusAvailable = <p className={styles.StatusAvailable}>Items available: {stockCount}</p>;
   
-  return (stock === 0) ? statusNoAvailable : statusAvailable;
+  return (stockCount === 0) ? statusNoAvailable : statusAvailable;
 }
